@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đoán số bí mật</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .game {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 22px;
+      padding: 30px 24px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,.2);
+    }
+    h1 { margin: 0 0 10px; font-size: 30px; }
+    .description { color: #666; margin-bottom: 24px; }
+    .turns {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+    input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+    }
+    input:focus { border-color: #667eea; }
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 15px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #667eea;
+      color: white;
+    }
+    button:active { transform: scale(.98); }
+    #message {
+      min-height: 55px;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #f3f4f6;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+    #restart {
+      display: none;
+      background: #222;
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h1>🎯 Đoán số bí mật</h1>
+    <div class="description">Máy đã chọn một số từ 1 đến 100</div>
+
+    <div class="turns" id="turns">Lượt 1/5</div>
+
+    <input id="guess" type="number" min="1" max="100"
+           placeholder="Nhập số bạn đoán">
+
+    <button id="guessBtn">ĐOÁN</button>
+
+    <div id="message">Hãy nhập một số từ 1 đến 100.</div>
+
+    <button id="restart">CHƠI LẠI</button>
+  </div>
+
+  <script>
+    // Tương ứng với: bimat = random.randint(1,100)
+    let bimat = Math.floor(Math.random() * 100) + 1;
+    let i = 1;
+    let gameOver = false;
+
+    const guessInput = document.getElementById("guess");
+    const guessBtn = document.getElementById("guessBtn");
+    const message = document.getElementById("message");
+    const turns = document.getElementById("turns");
+    const restartBtn = document.getElementById("restart");
+
+    function updateTurn() {
+      turns.textContent = `Lượt ${i}/5`;
+    }
+
+    function guess() {
+      if (gameOver) return;
+
+      const n = Number(guessInput.value);
+
+      if (!Number.isInteger(n) || n < 1 || n > 100) {
+        message.textContent = "Vui lòng nhập một số nguyên từ 1 đến 100.";
+        return;
+      }
+
+      // Tương ứng với if i==5 and n!=bimat
+      if (i === 5 && n !== bimat) {
+        message.textContent = `Bạn đã hết lượt đoán, số bí mật là: ${bimat}`;
+        gameOver = true;
+        guessInput.disabled = true;
+        guessBtn.disabled = true;
+        restartBtn.style.display = "block";
+        return;
+      }
+
+      // Tương ứng với if n == bimat
+      if (n === bimat) {
+        message.textContent = "🎉 Chúc mừng, bạn đã đoán đúng!";
+        gameOver = true;
+        guessInput.disabled = true;
+        guessBtn.disabled = true;
+        restartBtn.style.display = "block";
+        return;
+      }
+
+      // Giữ nguyên điều kiện của code Python
+      if (bimat - 20 < n && n < bimat + 20) {
+        message.textContent = "Gần đúng rồi, cố lên";
+      } else if (n < bimat - 20) {
+        message.textContent = "Số bạn đoán quá thấp";
+      } else if (n > bimat + 20) {
+        message.textContent = "Số bạn đoán quá cao";
+      }
+
+      i++;
+      updateTurn();
+      guessInput.value = "";
+
+      if (i <= 5) {
+        guessInput.focus();
+      }
+    }
+
+    function restart() {
+      bimat = Math.floor(Math.random() * 100) + 1;
+      i = 1;
+      gameOver = false;
+      guessInput.disabled = false;
+      guessBtn.disabled = false;
+      guessInput.value = "";
+      message.textContent = "Hãy nhập một số từ 1 đến 100.";
+      restartBtn.style.display = "none";
+      updateTurn();
+      guessInput.focus();
+    }
+
+    guessBtn.addEventListener("click", guess);
+    restartBtn.addEventListener("click", restart);
+
+    guessInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") guess();
+    });
+
+    updateTurn();
+  </script>
+</body>
+</html>
