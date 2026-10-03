@@ -134,7 +134,7 @@
       }
 
       // Giữ nguyên điều kiện của code Python
-      if (bimat - 5 < n && n < bimat + 5) {
+      if (bimat - 5 <= n && n <= bimat + 5) {
         message.textContent = "Gần đúng rồi, cố lên";
       } else if (n < bimat - 5) {
         message.textContent = "Số bạn đoán quá thấp";
